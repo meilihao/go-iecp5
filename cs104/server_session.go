@@ -5,6 +5,7 @@
 package cs104
 
 import (
+	"bufio"
 	"context"
 	"io"
 	"net"
@@ -66,54 +67,50 @@ func (sf *SrvSession) recvLoop() {
 		sf.Debug("recvLoop stopped!")
 	}()
 
+	var err error
+	var peekBuf []byte
+	var pkgLen byte
+	reader := bufio.NewReaderSize(sf.conn, 4096)
 	for {
-		rawData := make([]byte, APDUSizeMax)
-		for rdCnt, length := 0, 2; rdCnt < length; {
-			byteCount, err := io.ReadFull(sf.conn, rawData[rdCnt:length])
-			if err != nil {
-				// See: https://github.com/golang/go/issues/4373
-				if err != io.EOF && err != io.ErrClosedPipe ||
-					strings.Contains(err.Error(), "use of closed network connection") {
-					sf.Error("receive failed, %v", err)
-					return
-				}
-
-				if e, ok := err.(net.Error); ok && !e.Temporary() {
-					sf.Error("receive failed, %v", err)
-					return
-				}
-
-				if byteCount == 0 && err == io.EOF {
-					sf.Error("remote connect closed, %v", err)
-					return
-				}
-			}
-
-			rdCnt += byteCount
-			if rdCnt == 0 {
-				continue
-			} else if rdCnt == 1 {
-				if rawData[0] != startFrame {
-					rdCnt = 0
-					continue
-				}
+		if peekBuf, err = reader.Peek(2); err != nil {
+			if err == io.EOF {
+				sf.Error("peek header remote connect closed")
 			} else {
-				if rawData[0] != startFrame {
-					rdCnt, length = 0, 2
-					continue
-				}
-				length = int(rawData[1]) + 2
-				if length < APCICtlFiledSize+2 || length > APDUSizeMax {
-					rdCnt, length = 0, 2
-					continue
-				}
-				if rdCnt == length {
-					apdu := rawData[:length]
-					sf.Debug("RX Raw[% x]", apdu)
-					sf.rcvRaw <- apdu
-				}
+				sf.Error("peek header receive failed, %v", err)
 			}
+
+			return
 		}
+
+		if peekBuf[0] != startFrame {
+			sf.Error("receive apdu peek, %v", peekBuf)
+			return
+		}
+
+		pkgLen = 2 + peekBuf[1]
+		if _, err = reader.Peek(int(pkgLen)); err != nil {
+			if err == io.EOF {
+				sf.Error("peek pkg remote connect closed, %v", err)
+			} else {
+				sf.Error("peek pkg receive failed, %v", err)
+			}
+
+			return
+		}
+
+		rawData := make([]byte, pkgLen)
+		if _, err = io.ReadFull(reader, rawData); err != nil {
+			if err == io.EOF {
+				sf.Error("remote connect closed")
+			} else {
+				sf.Error("receive failed, %v", err)
+			}
+
+			return
+		}
+
+		sf.Debug("RX Raw[% x]", rawData)
+		sf.rcvRaw <- rawData
 	}
 }
 
