@@ -50,7 +50,7 @@ func TestClient(t *testing.T) {
 		}
 
 		// read cmd
-		if err := c.SendReadCmd(commonAddr, 100); err != nil {
+		if err := c.SendReadCmd(commonAddr, 2); err != nil {
 			t.Errorf("send counter interrogation cmd error %v\n", err)
 			t.FailNow()
 		}
@@ -67,8 +67,8 @@ func TestClient(t *testing.T) {
 			t.FailNow()
 		}
 
-		// 单点控制
-		if err := c.SendCmd(commonAddr, asdu.C_SC_NA_1, asdu.InfoObjAddr(1000), false); err != nil {
+		// 单点控制(设置设备ioa对应的值)
+		if err := c.SendCmd(commonAddr, asdu.C_SC_NA_1, asdu.InfoObjAddr(1), true); err != nil {
 			t.Errorf("send single cmd error %v\n", err)
 			t.FailNow()
 		}

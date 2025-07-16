@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/thinkgos/go-iecp5/asdu"
 	"github.com/thinkgos/go-iecp5/client"
@@ -17,6 +18,8 @@ type myClientHandler struct {
 
 // OnInterrogation 总召唤回复
 func (c *myClientHandler) InterrogationHandler(conn asdu.Connect, packet *asdu.ASDU) error {
+	log.Printf("---ASDU %+v", packet)
+
 	addr, value := packet.GetInterrogationCmd()
 	fmt.Printf("interrogation reply, addr: %d, value: %d\n", addr, value)
 	return nil
@@ -24,6 +27,8 @@ func (c *myClientHandler) InterrogationHandler(conn asdu.Connect, packet *asdu.A
 
 // OnCounterInterrogation 总计数器回复
 func (c *myClientHandler) CounterInterrogationHandler(conn asdu.Connect, packet *asdu.ASDU) error {
+	log.Printf("---ASDU %+v", packet)
+
 	addr, value := packet.GetCounterInterrogationCmd()
 	fmt.Printf("counter interrogation reply, addr: %d, request: 0x%02X, rreeze: 0x%02X\n",
 		addr, value.Request, value.Freeze)
@@ -32,11 +37,15 @@ func (c *myClientHandler) CounterInterrogationHandler(conn asdu.Connect, packet 
 
 // OnRead 读定值回复
 func (c *myClientHandler) ReadHandler(conn asdu.Connect, packet *asdu.ASDU) error {
+	log.Printf("---ASDU %+v", packet)
+
 	return c.ASDUHandler(conn, packet)
 }
 
 // OnTestCommand 测试下发回复
 func (c *myClientHandler) TestCommandHandler(conn asdu.Connect, packet *asdu.ASDU) error {
+	log.Printf("---ASDU %+v", packet)
+
 	addr, value := packet.GetTestCommand()
 	fmt.Printf("test cmd reply, addr: %d, value: %t\n", addr, value)
 	return nil
@@ -44,6 +53,8 @@ func (c *myClientHandler) TestCommandHandler(conn asdu.Connect, packet *asdu.ASD
 
 // OnClockSync 时钟同步回复
 func (c *myClientHandler) ClockSyncHandler(conn asdu.Connect, packet *asdu.ASDU) error {
+	log.Printf("---ASDU %+v", packet)
+
 	addr, value := packet.GetClockSynchronizationCmd()
 	fmt.Printf("clock sync reply, addr: %d, value: %d\n", addr, value.UnixMilli())
 	return nil
@@ -51,6 +62,8 @@ func (c *myClientHandler) ClockSyncHandler(conn asdu.Connect, packet *asdu.ASDU)
 
 // OnResetProcess 进程重置回复
 func (c *myClientHandler) ResetProcessHandler(conn asdu.Connect, packet *asdu.ASDU) error {
+	log.Printf("---ASDU %+v", packet)
+
 	addr, value := packet.GetResetProcessCmd()
 	fmt.Printf("reset process reply, addr: %d, value: 0x%02X\n", addr, value)
 	return nil
@@ -58,6 +71,8 @@ func (c *myClientHandler) ResetProcessHandler(conn asdu.Connect, packet *asdu.AS
 
 // OnDelayAcquisition 延迟获取回复
 func (c *myClientHandler) DelayAcquisitionHandler(conn asdu.Connect, packet *asdu.ASDU) error {
+	log.Printf("---ASDU %+v", packet)
+
 	addr, value := packet.GetDelayAcquireCommand()
 	fmt.Printf("delay acquisition reply, addr: %d, value: %d\n", addr, value)
 	return nil
@@ -65,6 +80,8 @@ func (c *myClientHandler) DelayAcquisitionHandler(conn asdu.Connect, packet *asd
 
 // OnASDU 数据正体
 func (c *myClientHandler) ASDUHandler(conn asdu.Connect, packet *asdu.ASDU) error {
+	log.Printf("---ASDU %+v", packet)
+
 	// 读取设备数据
 	switch client.GetDataType(packet.Type) {
 	case client.SinglePoint:
