@@ -62,8 +62,8 @@ type Client struct {
 	cancel      context.CancelFunc
 	closeCancel context.CancelFunc
 
-	onConnect        func(c *Client)
-	onConnectionLost func(c *Client)
+	onConnect        func(c *Client) // need non-blocking
+	onConnectionLost func(c *Client) // need non-blocking
 }
 
 // NewClient returns an IEC104 master,default config and default asdu.ParamsWide params
@@ -140,6 +140,10 @@ func (sf *Client) running() {
 		sf.Debug("connect success")
 		sf.conn = conn
 		sf.run(ctx)
+		if sf.conn != nil {
+			sf.conn.Close()
+			sf.conn = nil
+		}
 
 		sf.Debug("disconnected server %+v", sf.option.server)
 		select {
@@ -403,6 +407,10 @@ func (sf *Client) run(ctx context.Context) {
 			}
 		}
 	}
+}
+
+func (sf *Client) GetActiveStatus() bool {
+	return atomic.LoadUint32(&sf.isActive) == active
 }
 
 func (sf *Client) handlerLoop() {
