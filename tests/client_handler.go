@@ -16,7 +16,7 @@ var (
 type myClientHandler struct {
 }
 
-// OnInterrogation 总召唤回复
+// InterrogationHandler 总召唤回复
 func (c *myClientHandler) InterrogationHandler(conn asdu.Connect, packet *asdu.ASDU) error {
 	log.Printf("---ASDU %+v", packet)
 
@@ -25,7 +25,7 @@ func (c *myClientHandler) InterrogationHandler(conn asdu.Connect, packet *asdu.A
 	return nil
 }
 
-// OnCounterInterrogation 总计数器回复
+// CounterInterrogationHandler 总计数器回复
 func (c *myClientHandler) CounterInterrogationHandler(conn asdu.Connect, packet *asdu.ASDU) error {
 	log.Printf("---ASDU %+v", packet)
 
@@ -35,14 +35,14 @@ func (c *myClientHandler) CounterInterrogationHandler(conn asdu.Connect, packet 
 	return nil
 }
 
-// OnRead 读定值回复
+// ReadHandler 读定值回复
 func (c *myClientHandler) ReadHandler(conn asdu.Connect, packet *asdu.ASDU) error {
 	log.Printf("---ASDU %+v", packet)
 
 	return c.ASDUHandler(conn, packet)
 }
 
-// OnTestCommand 测试下发回复
+// TestCommandHandler 测试下发回复
 func (c *myClientHandler) TestCommandHandler(conn asdu.Connect, packet *asdu.ASDU) error {
 	log.Printf("---ASDU %+v", packet)
 
@@ -51,7 +51,7 @@ func (c *myClientHandler) TestCommandHandler(conn asdu.Connect, packet *asdu.ASD
 	return nil
 }
 
-// OnClockSync 时钟同步回复
+// ClockSyncHandler 时钟同步回复
 func (c *myClientHandler) ClockSyncHandler(conn asdu.Connect, packet *asdu.ASDU) error {
 	log.Printf("---ASDU %+v", packet)
 
@@ -60,7 +60,7 @@ func (c *myClientHandler) ClockSyncHandler(conn asdu.Connect, packet *asdu.ASDU)
 	return nil
 }
 
-// OnResetProcess 进程重置回复
+// ResetProcessHandler 进程重置回复
 func (c *myClientHandler) ResetProcessHandler(conn asdu.Connect, packet *asdu.ASDU) error {
 	log.Printf("---ASDU %+v", packet)
 
@@ -69,7 +69,7 @@ func (c *myClientHandler) ResetProcessHandler(conn asdu.Connect, packet *asdu.AS
 	return nil
 }
 
-// OnDelayAcquisition 延迟获取回复
+// DelayAcquisitionHandler 延迟获取回复
 func (c *myClientHandler) DelayAcquisitionHandler(conn asdu.Connect, packet *asdu.ASDU) error {
 	log.Printf("---ASDU %+v", packet)
 
@@ -78,7 +78,7 @@ func (c *myClientHandler) DelayAcquisitionHandler(conn asdu.Connect, packet *asd
 	return nil
 }
 
-// OnASDU 数据正体
+// ASDUHandler 数据正体
 func (c *myClientHandler) ASDUHandler(conn asdu.Connect, packet *asdu.ASDU) error {
 	log.Printf("---ASDU %+v", packet)
 
