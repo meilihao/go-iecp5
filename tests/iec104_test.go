@@ -27,7 +27,7 @@ func TestClient(t *testing.T) {
 	})
 
 	// Connect后会发送server active
-	if err := c.Connect(); err != nil {
+	if err := c.Connect(true); err != nil {
 		t.Errorf("client connect error %v\n", err)
 		t.FailNow()
 	}

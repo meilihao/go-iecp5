@@ -80,7 +80,7 @@ func New(settings *Settings, handler cs104.ClientHandlerInterface) *Client {
 	}
 }
 
-func (c *Client) Connect() error {
+func (c *Client) Connect(isBlock bool) error {
 	if err := c.client104.Start(); err != nil {
 		return err
 	}
@@ -94,19 +94,21 @@ func (c *Client) Connect() error {
 		}
 	})
 
-	now := time.Now()
-	for {
-		if c.client104.GetActiveStatus() {
-			break
-		}
+	if isBlock {
+		now := time.Now()
+		for {
+			if c.client104.GetActiveStatus() {
+				break
+			}
 
-		tmpNow := time.Now()
-		if tmpNow.Sub(now) > c.settings.Cfg104.ConnectTimeout0 {
-			err = fmt.Errorf("connection timeout of %f seconds", c.settings.Cfg104.ConnectTimeout0.Seconds())
-			c.Close()
-			break
+			tmpNow := time.Now()
+			if tmpNow.Sub(now) > c.settings.Cfg104.ConnectTimeout0 {
+				err = fmt.Errorf("connection timeout of %f seconds", c.settings.Cfg104.ConnectTimeout0.Seconds())
+				c.Close()
+				break
+			}
+			time.Sleep(time.Millisecond * 100)
 		}
-		time.Sleep(time.Millisecond * 100)
 	}
 
 	return err
