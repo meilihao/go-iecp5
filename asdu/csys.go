@@ -260,13 +260,19 @@ func TestCommandCP56Time2a(c Connect, coa CauseOfTransmission, ca CommonAddr, t 
 }
 
 // GetInterrogationCmd [C_IC_NA_1] 获取总召唤信息体(信息对象地址，召唤限定词)
-func (sf *ASDU) GetInterrogationCmd() (InfoObjAddr, QualifierOfInterrogation) {
-	return sf.DecodeInfoObjAddr(), QualifierOfInterrogation(sf.infoObj[0])
+func (sf *ASDU) GetInterrogationCmd() (ioa InfoObjAddr, q QualifierOfInterrogation) {
+	ioa = sf.DecodeInfoObjAddr()
+	q = QualifierOfInterrogation(sf.infoObj[0])
+	sf.infoObj = sf.infoObj[1:]
+	return
 }
 
 // GetCounterInterrogationCmd [C_CI_NA_1] 获得计量召唤信息体(信息对象地址，计量召唤限定词)
-func (sf *ASDU) GetCounterInterrogationCmd() (InfoObjAddr, QualifierCountCall) {
-	return sf.DecodeInfoObjAddr(), ParseQualifierCountCall(sf.infoObj[0])
+func (sf *ASDU) GetCounterInterrogationCmd() (ioa InfoObjAddr, q QualifierCountCall) {
+	ioa = sf.DecodeInfoObjAddr()
+	q = ParseQualifierCountCall(sf.infoObj[0])
+	sf.infoObj = sf.infoObj[1:]
+	return
 }
 
 // GetReadCmd [C_RD_NA_1] 获得读命令信息地址
@@ -286,8 +292,11 @@ func (sf *ASDU) GetTestCommand() (InfoObjAddr, bool) {
 }
 
 // GetResetProcessCmd [C_RP_NA_1] 获得复位进程命令信息体(信息对象地址,复位进程命令限定词)
-func (sf *ASDU) GetResetProcessCmd() (InfoObjAddr, QualifierOfResetProcessCmd) {
-	return sf.DecodeInfoObjAddr(), QualifierOfResetProcessCmd(sf.infoObj[0])
+func (sf *ASDU) GetResetProcessCmd() (ioa InfoObjAddr, q QualifierOfResetProcessCmd) {
+	ioa = sf.DecodeInfoObjAddr()
+	q = QualifierOfResetProcessCmd(sf.infoObj[0])
+	sf.infoObj = sf.infoObj[1:]
+	return
 }
 
 // GetDelayAcquireCommand [C_CD_NA_1] 获取延时获取命令信息体(信息对象地址,延时毫秒数)
