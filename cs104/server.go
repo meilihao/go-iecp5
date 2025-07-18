@@ -67,12 +67,18 @@ func (sf *Server) SetParams(p *asdu.Params) *Server {
 }
 
 // ListenAndServer run the server
-func (sf *Server) ListenAndServer(addr string) {
+func (sf *Server) ListenAndServer(addr string) error {
 	listen, err := net.Listen("tcp", addr)
 	if err != nil {
-		sf.Error("server run failed, %v", err)
-		return
+		return err
 	}
+
+	go sf.Serve(listen)
+
+	return nil
+}
+
+func (sf *Server) Serve(listen net.Listener) {
 	sf.mux.Lock()
 	sf.listen = listen
 	sf.mux.Unlock()

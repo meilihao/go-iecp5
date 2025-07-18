@@ -427,7 +427,7 @@ func (sf *Client) handlerLoop() {
 		case rawAsdu := <-sf.rcvASDU:
 			asduPack := asdu.NewEmptyASDU(&sf.option.params)
 			if err := asduPack.UnmarshalBinary(rawAsdu); err != nil {
-				sf.Warn("asdu UnmarshalBinary failed,%+v", err)
+				sf.Warn("asdu UnmarshalBinary failed,%+v, %+v", err, rawAsdu)
 				continue
 			}
 			if err := sf.clientHandler(asduPack); err != nil {

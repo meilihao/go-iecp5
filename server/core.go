@@ -54,9 +54,9 @@ func New(settings *Settings, handler cs104.ServerHandlerInterface) *Server {
 	}
 }
 
-func (s *Server) Start() {
+func (s *Server) Start() error {
 	addr := s.settings.Host + ":" + strconv.Itoa(s.settings.Port)
-	go s.cs104Server.ListenAndServer(addr)
+	return s.cs104Server.ListenAndServer(addr)
 }
 
 func (s *Server) Stop() error {
