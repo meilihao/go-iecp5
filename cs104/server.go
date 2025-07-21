@@ -162,9 +162,9 @@ func (sf *Server) SendByCommonAddr(a *asdu.ASDU) error {
 		sf.mux.Unlock()
 		return fmt.Errorf("no session by common address %d", a.CommonAddr)
 	} else {
-		_ = s.Send(a)
+		err := s.Send(a)
 		sf.mux.Unlock()
-		return nil
+		return err
 	}
 }
 
