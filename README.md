@@ -1,6 +1,5 @@
-# go-iecp5(Archived)
-## NOTE: Archived, not maintain. 
-## NOTE: 已归档, 不再维护, 放弃License. 有需要的可以自由分发
+# go-iecp5
+> repo forked from [go-iecp5](github.com/thinkgos/go-iecp5)(已停止维护)
 
 go-iecp5 library for IEC 60870-5 based protocols in pure go.
 The current implementation contains code for IEC 60870-5-104 (protocool over TCP/IP) specifications.
@@ -43,3 +42,4 @@ if package help you a lot,you can support us by:
 
 ## 改进
 1. merge [iec104的client,server,tests](https://github.com/wendy512/iec104)
+1. 修复部分协议解析错误, 并适配proxy场景
