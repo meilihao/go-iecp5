@@ -7,6 +7,7 @@ package cs104
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net"
 	"sync"
 	"time"
@@ -22,15 +23,16 @@ const timeoutResolution = 100 * time.Millisecond
 
 // Server the common server
 type Server struct {
-	config         Config
-	params         asdu.Params
-	handler        ServerHandlerInterface
-	TLSConfig      *tls.Config
-	mux            sync.Mutex
-	sessions       map[*SrvSession]struct{}
-	listen         net.Listener
-	onConnection   func(asdu.Connect)
-	connectionLost func(asdu.Connect)
+	config               Config
+	params               asdu.Params
+	handler              ServerHandlerInterface
+	TLSConfig            *tls.Config
+	mux                  sync.Mutex
+	sessions             map[*SrvSession]struct{}
+	sessionsByCommonAddr map[asdu.CommonAddr]*SrvSession
+	listen               net.Listener
+	onConnection         func(asdu.Connect)
+	connectionLost       func(asdu.Connect)
 	clog.Clog
 	wg sync.WaitGroup
 }
@@ -38,11 +40,12 @@ type Server struct {
 // NewServer new a server, default config and default asdu.ParamsWide params
 func NewServer(handler ServerHandlerInterface) *Server {
 	return &Server{
-		config:   DefaultConfig(),
-		params:   *asdu.ParamsWide,
-		handler:  handler,
-		sessions: make(map[*SrvSession]struct{}),
-		Clog:     clog.NewLogger("cs104 server => "),
+		config:               DefaultConfig(),
+		params:               *asdu.ParamsWide,
+		handler:              handler,
+		sessions:             make(map[*SrvSession]struct{}),
+		sessionsByCommonAddr: make(map[asdu.CommonAddr]*SrvSession),
+		Clog:                 clog.NewLogger("cs104 server => "),
 	}
 }
 
@@ -112,6 +115,8 @@ func (sf *Server) Serve(listen net.Listener) {
 				onConnection:   sf.onConnection,
 				connectionLost: sf.connectionLost,
 				Clog:           sf.Clog,
+
+				server: sf,
 			}
 			sf.mux.Lock()
 			sf.sessions[sess] = struct{}{}
@@ -147,6 +152,20 @@ func (sf *Server) Send(a *asdu.ASDU) error {
 	}
 	sf.mux.Unlock()
 	return nil
+}
+
+// Send imp interface Connect
+func (sf *Server) SendByCommonAddr(a *asdu.ASDU) error {
+	sf.mux.Lock()
+	s := sf.sessionsByCommonAddr[a.CommonAddr]
+	if s == nil {
+		sf.mux.Unlock()
+		return fmt.Errorf("no session by common address %d", a.CommonAddr)
+	} else {
+		_ = s.Send(a)
+		sf.mux.Unlock()
+		return nil
+	}
 }
 
 // Params imp interface Connect

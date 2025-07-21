@@ -72,3 +72,7 @@ func (s *Server) SetOnConnectionHandler(f func(asdu.Connect)) {
 func (s *Server) SetConnectionLostHandler(f func(asdu.Connect)) {
 	s.cs104Server.SetConnectionLostHandler(f)
 }
+
+func (s *Server) SendByCommonAddr(pack *asdu.ASDU) error {
+	return s.cs104Server.SendByCommonAddr(pack)
+}

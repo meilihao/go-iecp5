@@ -56,6 +56,9 @@ type SrvSession struct {
 	wg     sync.WaitGroup
 	cancel context.CancelFunc
 	ctx    context.Context
+
+	server     *Server
+	commonAddr asdu.CommonAddr
 }
 
 // RecvLoop feeds t.rcvRaw.
@@ -416,6 +419,11 @@ func (sf *SrvSession) serverHandler(asduPack *asdu.ASDU) error {
 	}()
 
 	sf.Debug("ASDU %+v", asduPack)
+
+	if sf.commonAddr == 0 {
+		sf.commonAddr = asduPack.Identifier.CommonAddr
+		sf.server.sessionsByCommonAddr[sf.commonAddr] = sf
+	}
 
 	switch asduPack.Identifier.Type {
 	case asdu.C_IC_NA_1: // InterrogationCmd
