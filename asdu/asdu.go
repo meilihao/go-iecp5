@@ -105,9 +105,9 @@ type Identifier struct {
 // String 返回数据单元标识符的信息,例： "TypeID Cause OrigAddr@CommonAddr"
 func (id Identifier) String() string {
 	if id.OrigAddr == 0 {
-		return fmt.Sprintf("%s %s @%d", id.Type, id.Coa, id.CommonAddr)
+		return fmt.Sprintf("%s %s @%d n:%d", id.Type, id.Coa, id.CommonAddr, id.Variable.Number)
 	}
-	return fmt.Sprintf("%s %s %d@%d ", id.Type, id.Coa, id.OrigAddr, id.CommonAddr)
+	return fmt.Sprintf("%s %s %d@%d n:%d ", id.Type, id.Coa, id.OrigAddr, id.CommonAddr, id.Variable.Number)
 }
 
 // ASDU (Application Service Data Unit) is an application message.
