@@ -346,6 +346,8 @@ type CauseOfTransmission struct {
 type OriginAddr byte
 
 // Cause is the cause of transmission. bit5-bit0
+//
+//go:generate stringer -type=Cause
 type Cause byte
 
 // Cause of transmission bit5-bit0
@@ -511,13 +513,16 @@ func (sf CauseOfTransmission) String() string {
 // CommonAddr is a station address.
 // The width is controlled by Params.CommonAddrSize.
 // width 1:
-//      <0>: 未用
-//      <1..254>: 站地址
-//      <255>: 全局地址
+//
+//	<0>: 未用
+//	<1..254>: 站地址
+//	<255>: 全局地址
+//
 // width 2:
-//      <0>: 未用
-//      <1..65534>: 站地址
-//      <65535>: 全局地址
+//
+//	<0>: 未用
+//	<1..65534>: 站地址
+//	<65535>: 全局地址
 type CommonAddr uint16
 
 // special commonAddr
